@@ -102,5 +102,8 @@ files:
         EasyRiderStage4('easyrider.easyrider').run_tests()
   learner_created: false
 feedback_link: https://hyperskill.org/learn/step/10891#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Mon, 13 Feb 2023 13:21:46 UTC"
 record: -1

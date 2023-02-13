@@ -143,9 +143,48 @@ def get_bus_line_info(json_obj):
         print(f'bus_id: {bus_id}, stops: {stops}')
 
 
+def check_start_stop(json_obj):
+    start_final = {}
+    for item in json_obj:
+        if item['stop_type'] in ['S', 'F']:
+            if start_final.get(item['bus_id']):
+                start_final[item['bus_id']].append(item['stop_type'])
+            else:
+                start_final[item['bus_id']] = []
+                start_final[item['bus_id']].append(item['stop_type'])
+    for key, value in start_final.items():
+        if len(value) != 2:
+            return key
+    return -1
+
+
+def get_stop_type_info(json_obj):
+    start_stops = list(set(item["stop_name"] for item in list(filter(lambda item: item['stop_type'] == 'S', json_obj))))
+    finish_stops = list(set(item["stop_name"] for item in list(filter(lambda item: item['stop_type'] == 'F', json_obj))))
+    list.sort(start_stops)
+    list.sort(finish_stops)
+    buses_stops = {}
+    for item in json_obj:
+        if item['stop_name'] in buses_stops:
+            buses_stops[item['stop_name']].add(item['bus_id'])
+        else:
+            buses_stops[item['stop_name']] = set()
+            buses_stops[item['stop_name']].add(item['bus_id'])
+
+    transfer_stops = list(set(key for key, value in buses_stops.items() if len(value) >= 2))
+    list.sort(transfer_stops)
+    print(f'Start stops: {len(start_stops)} {start_stops}')
+    print(f'Transfer stops: {len(transfer_stops)} {transfer_stops}')
+    print(f'Finish stops: {len(finish_stops)} {finish_stops}')
+
+
 def main():
     json_obj = json.loads(json_str)
-    get_bus_line_info(json_obj)
+    incorrect_bus = check_start_stop(json_obj)
+    if incorrect_bus == -1:
+        get_stop_type_info(json_obj)
+    else:
+        print(f'There is no start or end stop for the line: {incorrect_bus}.')
     # check_json_data(json_obj)
     # print(json.dumps(json_obj, indent=4))
 
