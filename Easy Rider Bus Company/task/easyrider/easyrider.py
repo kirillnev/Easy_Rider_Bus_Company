@@ -18,70 +18,6 @@ json_str = input()
 # json_str = '''
 # [
 #     {
-#         "bus_id": 128,
-#         "stop_id": 1,
-#         "stop_name": "Prospekt Avenue",
-#         "next_stop": 3,
-#         "stop_type": "S",
-#         "a_time": "08:12"
-#     },
-#     {
-#         "bus_id": 128,
-#         "stop_id": 3,
-#         "stop_name": "Elm Street",
-#         "next_stop": 5,
-#         "stop_type": "",
-#         "a_time": "08:19"
-#     },
-#     {
-#         "bus_id": 128,
-#         "stop_id": 5,
-#         "stop_name": "Fifth Avenue",
-#         "next_stop": 7,
-#         "stop_type": "O",
-#         "a_time": "08:25"
-#     },
-#     {
-#         "bus_id": 128,
-#         "stop_id": 7,
-#         "stop_name": "Sesame Street",
-#         "next_stop": 0,
-#         "stop_type": "F",
-#         "a_time": "08:37"
-#     },
-#     {
-#         "bus_id": 256,
-#         "stop_id": 2,
-#         "stop_name": "Pilotow Street",
-#         "next_stop": 3,
-#         "stop_type": "S",
-#         "a_time": "09:20"
-#     },
-#     {
-#         "bus_id": 256,
-#         "stop_id": 3,
-#         "stop_name": "Elm Street",
-#         "next_stop": 6,
-#         "stop_type": "",
-#         "a_time": "09:45"
-#     },
-#     {
-#         "bus_id": 256,
-#         "stop_id": 6,
-#         "stop_name": "Sunset Boulevard",
-#         "next_stop": 7,
-#         "stop_type": "",
-#         "a_time": "09:59"
-#     },
-#     {
-#         "bus_id": 256,
-#         "stop_id": 7,
-#         "stop_name": "Sesame Street",
-#         "next_stop": 0,
-#         "stop_type": "F",
-#         "a_time": "10:12"
-#     },
-#     {
 #         "bus_id": 512,
 #         "stop_id": 4,
 #         "stop_name": "Bourbon Street",
@@ -178,13 +114,39 @@ def get_stop_type_info(json_obj):
     print(f'Finish stops: {len(finish_stops)} {finish_stops}')
 
 
+def check_arrival_time(json_obj):
+    bus_ids = set(item["bus_id"] for item in json_obj)
+    print('Arrival time test:')
+    is_ok = True
+    for bus_id in bus_ids:
+        cur_stops = {item['stop_id']: item for item in json_obj if item['bus_id'] == bus_id}
+        start_stop_id = -1
+        for stop_id, value in cur_stops.items():
+            if value['stop_type'] == 'S':
+                start_stop_id = stop_id
+                break
+        cur_id = start_stop_id
+        while True and cur_stops[cur_id]['next_stop'] != 0:
+            # print(cur_stops[cur_id])
+            # print(cur_stops[cur_stops[cur_id]['next_stop']])
+            # print(cur_stops[cur_id]['a_time'] >= cur_stops[cur_stops[cur_id]['next_stop']]['a_time'])
+            if cur_stops[cur_id]['a_time'] >= cur_stops[cur_stops[cur_id]['next_stop']]['a_time']:
+                break
+            cur_id = cur_stops[cur_id]['next_stop']
+        if cur_stops[cur_id]['next_stop'] != 0:
+            is_ok = False
+            print(f'bus_id line {cur_stops[cur_id]["bus_id"]}: wrong time on station {cur_stops[cur_stops[cur_id]["next_stop"]]["stop_name"]}')
+    if is_ok:
+        print('OK')
+
 def main():
     json_obj = json.loads(json_str)
-    incorrect_bus = check_start_stop(json_obj)
-    if incorrect_bus == -1:
-        get_stop_type_info(json_obj)
-    else:
-        print(f'There is no start or end stop for the line: {incorrect_bus}.')
+    check_arrival_time(json_obj)
+    # incorrect_bus = check_start_stop(json_obj)
+    # if incorrect_bus == -1:
+    #     get_stop_type_info(json_obj)
+    # else:
+    #     print(f'There is no start or end stop for the line: {incorrect_bus}.')
     # check_json_data(json_obj)
     # print(json.dumps(json_obj, indent=4))
 

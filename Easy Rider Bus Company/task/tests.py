@@ -1,4 +1,4 @@
-from test.tests import EasyRiderStage4
+from test.tests import EasyRiderStage5
 
 if __name__ == '__main__':
-    EasyRiderStage4('easyrider.easyrider').run_tests()
+    EasyRiderStage5('easyrider.easyrider').run_tests()
