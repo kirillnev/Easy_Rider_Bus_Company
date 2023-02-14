@@ -139,9 +139,22 @@ def check_arrival_time(json_obj):
     if is_ok:
         print('OK')
 
+
+def check_buses_type(json_obj):
+    print('On demand stops test:')
+    stops_set = set(item['stop_id'] for item in json_obj)
+    invalid_stops = set()
+    for stop in stops_set:
+        cur_stops = [item for item in json_obj if item['stop_id'] == stop]
+        for item in cur_stops:
+            if len(cur_stops) > 1 and item['stop_type'] == 'O':
+                invalid_stops.add(item['stop_name'])
+    print(f'Wrong stop type: {list(invalid_stops)}' if len(invalid_stops) > 0 else 'OK')
+
 def main():
     json_obj = json.loads(json_str)
-    check_arrival_time(json_obj)
+    check_buses_type(json_obj)
+    # check_arrival_time(json_obj)
     # incorrect_bus = check_start_stop(json_obj)
     # if incorrect_bus == -1:
     #     get_stop_type_info(json_obj)
